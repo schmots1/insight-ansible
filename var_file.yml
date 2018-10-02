@@ -1,0 +1,11 @@
+hostname: "172.32.0.182"
+username: "admin"
+volname: ansibleVolume
+vserver: ansibleSVM
+policy: ansiblePolicy
+address: 172.32.0.183
+aggr: aggr1
+client: 0.0.0.0/0
+data_lif: 172.32.0.183
+state: present
+password: netapp123

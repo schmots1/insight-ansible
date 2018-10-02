@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  name: Setup ONTAP
+  gather_facts: no
+  vars:
+    hostname: "172.32.0.182"
+    username: "admin"
+    state: present
+  vars_prompt:
+  - name: "password"
+    prompt: "Password:"
+  tasks:
+  - name: Add licenses
+    na_ontap_license:
+      state: present
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      #serial_number: #################
+      https: true
+      validate_certs: false
+      license_codes: CODE1,CODE2
+  - name: Assign unowned disks
+    na_ontap_disks:
+      state: "{{ state }}"
+      node: "{{ item }}"
+      https: true
+      validate_certs: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+    with_items:
+      - vsim-01
+      - vsim-02
+  - name: Create Aggrs
+    na_ontap_aggregate:
+      state: "{{ state }}"
+      name: "{{ item.name }}"
+      nodes: "{{ item.node }}"
+      disk_count: 26
+      raid_size: 26
+      https: true
+      validate_certs: false
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+    with_items:
+      - { name: "aggr1", node: "vsim-01" }
+      - { name: "aggr2", node: "vsim-01" }
+      - { name: "aggr3", node: "vsim-02" }
+      - { name: "aggr4", node: "vsim-02" }

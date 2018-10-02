@@ -1,0 +1,61 @@
+---
+- hosts: localhost
+  name: Setup ONTAP
+  vars_files:
+  - var_file.yml
+  tasks:
+  - name: Create Policy
+    na_ontap_export_policy:
+      state: "{{ state }}"
+      name: "{{ policy }}"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Setup rules
+    na_ontap_export_policy_rule:
+      state: "{{ state }}"
+      policy_name: "{{ policy }}"
+      vserver: "{{ vserver }}"
+      client_match: "{{ client }}"
+      ro_rule: sys
+      rw_rule: sys
+      super_user_security: sys
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+  - name: Create volume
+    na_ontap_volume:
+      state: "{{ state }}"
+      name: "{{ volname }}"
+      aggregate_name: "{{ aggr }}"
+      size: 1
+      size_unit: gb
+      policy: "{{ policy }}"
+      junction_path: "/{{ volname }}"
+      space_guarantee: "none"
+      vserver: "{{ vserver }}"
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      https: true
+      validate_certs: false
+- hosts: all
+  name: Mount
+  vars_files:
+  - var_file.yml
+  tasks:
+  - name: nfs install
+    package:
+      name: nfs-utils
+      state: present
+  - name: Mount nfs export
+    mount:
+      state: mounted
+      path: /mnt/tmp
+      src: "{{ data_lif }}:/{{ volname}}"
+      fstype: nfs
