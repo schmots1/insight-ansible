@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+  vars:
+    hostname: "172.32.0.172"
+    username: "admin"
+    password: "netapp123"
+    volname: "AnsibleVol"
+    account: "ansibleAccount"
+    size_gb: "1"
+    min: "1000"
+    max: "2000"
+    burst: "3000"
+    secret: "ThIsIs$eCrEt"
+    state: "present"
+  tasks:
+    - name: Create Account
+      na_elementsw_account:
+        hostname: "{{ hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}" 
+        state: "{{ state }}"
+        element_username: "{{ account }}"
+        initiator_secret: "{{ secret }}" 
+    - name: Volume Create
+      na_elementsw_volume:
+        hostname: "{{ hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}" 
+        state: "{{ state }}"
+        name: "{{ volname }}"
+        qos: {minIOPS: "{{ min }}", maxIOPS: "{{ max }}", burstIOPS: "{{ burst }}"}
+        account_id: "{{ account }}"
+        size: "{{ size_gb }}"
+        size_unit: gb
+        enable512e: True

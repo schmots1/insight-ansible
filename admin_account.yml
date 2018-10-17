@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  vars:
+    hostname: "172.32.0.172"
+    username: "admin"
+    password: "netapp123"
+    volname: "AnsibleVol"
+    new_user : "david"
+    new_pass : "netapp123"
+    access: accounts,drives,nodes,volumes
+    state: "present"
+  tasks:
+    - name: Create Admin Account
+      na_elementsw_admin_users:
+        hostname: "{{ hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}" 
+        state: "{{ state }}"
+        element_username: "{{ new_user }}"
+        element_password: "{{ new_pass }}"
+        acceptEula: True
+        access: "{{ access }}"

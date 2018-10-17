@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  vars:
+    hostname: "172.32.0.172"
+    username: "admin"
+    password: "netapp123"
+    volname: "AnsibleVol"
+    account: ansibleAccount
+    snapshot: newsnap-1
+    state: "present"
+  tasks:
+    - name: Create snapshot
+      na_elementsw_snapshot:
+        hostname: "{{ hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}" 
+        state: "{{ state }}"
+        src_volume_id: "{{ volname }}"
+        account_id: "{{ account }}"
+        name: "{{ snapshot }}"
